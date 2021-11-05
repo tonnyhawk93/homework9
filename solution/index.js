@@ -12,15 +12,17 @@ module.exports = class MySet{
     clear() {
         this.group = []
     }
-    entries() {
-        return this.group.map(el => [el, el])
+    *entries() {
+        for(let value of this.group) {
+            yield [value, value]
+        }
     }
-    keys() {
-        return this.group
+    *keys() {
+        for(let value of this.group) {
+            yield value
+        }
     }
-    values() {
-        return this.group
-    }
+    values = this.keys;
     add(el){
         if(!this.has(el)) this.group.push(el);
         return this
@@ -38,27 +40,11 @@ module.exports = class MySet{
         }
         return set;        
     }
-    [Symbol.iterator]() {
-        return new GroupIterator(this.group);
-    }
+    [Symbol.iterator] = this.keys;
     [Symbol.toStringTag] = '^_^'
     forEach(fn, data = this) {
         for (let value of this) {
                 fn.call(data, value);
             }
-    }
-}
-class GroupIterator{
-    constructor(group){
-        this.group = [...group];
-    }
-    next(){        
-        if(this.group.length) {
-            let value = this.group.shift();
-            return {            
-                value,
-                done: false
-            }
-        }else return {done : true}
     }
 }
