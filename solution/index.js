@@ -1,9 +1,29 @@
 module.exports = class MySet{
-    constructor(){
+    constructor(elements){
+        this.group = [];
+        elements.forEach(element => this.add(element));
+    }
+    get size() {
+        return this.group.length
+    }
+    forEach(cb, data) {
+        cb(this);
+    }
+    clear() {
         this.group = []
+    }
+    entries() {
+        return this.group.map(el => [el, el])
+    }
+    keys() {
+        return this.group
+    }
+    values() {
+        return this.group
     }
     add(el){
         if(!this.has(el)) this.group.push(el);
+        return this
     }
     delete(el){
         if(this.has(el)) this.group.splice(this.group.indexOf(el), 1);
@@ -12,25 +32,29 @@ module.exports = class MySet{
         return this.group.includes(el);
     }
     static from(iterable) {
-        let group = new Group();
+        let set = new MySet();
         for(let value of iterable) {
-            group.add(value);
+            set.add(value);
         }
-        return group;        
+        return set;        
     }
     [Symbol.iterator]() {
         return new GroupIterator(this.group);
     }
+    [Symbol.toStringTag] = '^_^'
+    forEach(fn, data = this) {
+        for (let value of this) {
+                fn.call(data, value);
+            }
+    }
 }
-
-
 class GroupIterator{
     constructor(group){
         this.group = [...group];
     }
     next(){        
         if(this.group.length) {
-            let value = this.group.pop();
+            let value = this.group.shift();
             return {            
                 value,
                 done: false
@@ -38,5 +62,3 @@ class GroupIterator{
         }else return {done : true}
     }
 }
-
-//Object.prototype.hasOwnProperty.call(map, 'one')
